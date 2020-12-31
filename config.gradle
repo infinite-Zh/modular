@@ -1,0 +1,4 @@
+ext {
+    isRelease = true
+    packageNameForApt="com.infinite.modular.apt"
+}

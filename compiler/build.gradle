@@ -1,0 +1,19 @@
+plugins {
+    id 'java-library'
+}
+
+
+sourceCompatibility = "7"
+targetCompatibility = "7"
+
+// java控制台输出中文乱码
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+dependencies {
+    compileOnly 'com.google.auto.service:auto-service:1.0-rc4'
+    annotationProcessor 'com.google.auto.service:auto-service:1.0-rc4'
+    implementation project(':annotation')
+    implementation 'com.squareup:javapoet:1.11.1'
+}
