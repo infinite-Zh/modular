@@ -9,6 +9,7 @@ import android.util.LruCache;
 import com.infinite.annotation.RouterBean;
 import com.infinite.arouter_api.core.ARouterLoadGroup;
 import com.infinite.arouter_api.core.ARouterLoadPath;
+import com.infinite.arouter_api.core.Call;
 
 public class ARouterManager {
 
@@ -74,6 +75,11 @@ public class ARouterManager {
                         } else {
                             ((Activity) context).startActivityForResult(intent, code);
                         }
+                        break;
+                    case CALL:
+                        Class<?> clazz=routerBean.getClazz();
+                        Call instance = (Call) clazz.newInstance();
+                        return instance;
 
                 }
             }

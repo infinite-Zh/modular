@@ -22,7 +22,8 @@ public class RouterBean {
     }
 
     public enum Type{
-        ACTIVITY
+        ACTIVITY,
+        CALL
     }
 
     private Type type;

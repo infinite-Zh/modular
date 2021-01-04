@@ -13,6 +13,7 @@ public class Constant {
     public static final String AROUTER_GROUP = "com.infinite.arouter_api.core.ARouterLoadGroup";
     public static final String AROUTER_PATH = "com.infinite.arouter_api.core.ARouterLoadPath";
     public static final String PARAMETER_LOAD = "com.infinite.arouter_api.core.ParameterLoad";
+    public static final String CALL_LOAD = "com.infinite.arouter_api.core.Call";
     public static final String PATH_METHOD_NAME = "loadPath";
     public static final String GROUP_METHOD_NAME = "loadGroup";
     public static final String PARAMETER_METHOD_NAME = "loadParameter";

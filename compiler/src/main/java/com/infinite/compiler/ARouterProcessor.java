@@ -119,6 +119,7 @@ public class ARouterProcessor extends AbstractProcessor {
 
         TypeElement typeActivity = elementUtil.getTypeElement(Constant.ACTIVITY);
         TypeElement typeActivityX = elementUtil.getTypeElement(Constant.ACTIVITYX);
+        TypeElement typeCall = elementUtil.getTypeElement(Constant.CALL_LOAD);
 
         for (Element element : elements) {
             if (element == null) {
@@ -145,6 +146,8 @@ public class ARouterProcessor extends AbstractProcessor {
             if (typeUtil.isSubtype(typeMirror, typeActivity.asType()) ||
                     typeUtil.isSubtype(typeMirror, typeActivityX.asType())) {
                 bean.setType(RouterBean.Type.ACTIVITY);
+            } else if (typeUtil.isSubtype(typeMirror, typeCall.asType())) {
+                bean.setType(RouterBean.Type.CALL);
             } else {
                 messager.printMessage(Diagnostic.Kind.ERROR, "target type annotated is wrong");
                 throw new RuntimeException("注解只能用于activity");
@@ -199,11 +202,11 @@ public class ARouterProcessor extends AbstractProcessor {
             builder.addStatement("$N.put($S,$T.class)",
                     Constant.GROUP_PARAMETER_NAME,
                     entry.getKey(),
-                    ClassName.get(packageNameForApt,entry.getValue()));
+                    ClassName.get(packageNameForApt, entry.getValue()));
 
             builder.addStatement("return $N", Constant.GROUP_PARAMETER_NAME);
 
-            String fileName =  Constant.GROUP_FILE_NAME+entry.getKey();
+            String fileName = Constant.GROUP_FILE_NAME + entry.getKey();
             JavaFile.builder(packageNameForApt,
                     TypeSpec
                             .classBuilder(fileName)
@@ -283,7 +286,7 @@ public class ARouterProcessor extends AbstractProcessor {
                             .build()).build()
                     .writeTo(filer);
 
-            TypeElement element=elementUtil.getTypeElement(packageNameForApt + "." + finalName);
+            TypeElement element = elementUtil.getTypeElement(packageNameForApt + "." + finalName);
 
             tempGroupMap.put(entry.getKey(), finalName);
 

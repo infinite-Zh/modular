@@ -13,6 +13,7 @@ import com.infinite.annotation.RouterBean;
 import com.infinite.arouter_api.ARouterManager;
 import com.infinite.arouter_api.core.ARouterLoadGroup;
 import com.infinite.arouter_api.core.ARouterLoadPath;
+import com.infinite.common.user.call.UserCall;
 import com.infinite.modular.apt.ARouter$$Group$$guide;
 import com.infinite.modular.apt.ARouter$$Group$$user;
 
@@ -38,8 +39,14 @@ public class MainActivity extends AppCompatActivity {
         ARouterManager.getInstance()
                 .build("/user/UserMainActivity2")
                 .withString("name","lf")
-                .withInt("agex",20)
+                .withInt("agex",2000)
                 .navigate(this,100);
+
+        UserCall userCall = (UserCall) ARouterManager.getInstance()
+                .build("/user/UserCallImpl")
+                .navigate(this);
+
+        Log.e("user", userCall.getUserInfo("0").toString());
     }
 
     @Override
