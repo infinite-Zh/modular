@@ -40,7 +40,7 @@ public class BigView extends View implements GestureDetector.OnGestureListener {
 
     private BitmapRegionDecoder decoder;
 
-    private final Matrix matrix =new Matrix();
+    private final Matrix matrix = new Matrix();
 
     public BigView(Context context) {
         super(context);
@@ -60,17 +60,14 @@ public class BigView extends View implements GestureDetector.OnGestureListener {
         options = new BitmapFactory.Options();
     }
 
-    private InputStream is;
-
     public void setImageStream(InputStream is) {
-        this.is = is;
 
         options.inJustDecodeBounds = true;
-        options.inMutable = true;
-        options.inPreferredConfig= Bitmap.Config.RGB_565;
         BitmapFactory.decodeStream(is, null, options);
 
-
+        options.inMutable = true;
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
+        options.inJustDecodeBounds = false;
         mImageWidth = options.outWidth;
         mImageHeight = options.outHeight;
 
@@ -81,42 +78,40 @@ public class BigView extends View implements GestureDetector.OnGestureListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        requestLayout();
 
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
         mRect.left = 0;
         mRect.top = 0;
-        mRect.bottom = h;
-        mRect.right = w;
+//        mRect.bottom = getMeasuredHeight();
+//        mRect.right = getMeasuredWidth();
 
         if (ratio > 1) {
-            mScale = h / (float) mImageHeight;
-//            mRect.right = (int) (mRect.bottom * mScale);
+            mScale = getMeasuredHeight() / (float) mImageHeight;
+
+            mRect.bottom = mImageHeight;
+            mRect.right = (int) (mImageWidth / mScale);
         } else {
-            mScale = w / (float) mImageWidth;
-//            mRect.bottom = (int) (mRect.right * mScale);
+            mScale = getMeasuredWidth() / (float) mImageWidth;
+            mRect.right = mImageWidth;
+            mRect.bottom = (int) (mRect.right * mScale);
         }
-
-        invalidate();
-
     }
 
-    private void getBitmap() {
-        options.inBitmap = mBitmap;
-        mBitmap = decoder.decodeRegion(mRect, options);
-    }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        getBitmap();
+        options.inBitmap = mBitmap;
+        mBitmap = decoder.decodeRegion(mRect, options);
         if (mBitmap != null) {
-            matrix.setScale(mScale,mScale);
-            canvas.drawBitmap(mBitmap, matrix,null);
+            matrix.setScale(mScale, mScale);
+            canvas.drawBitmap(mBitmap, matrix, null);
         }
     }
 
@@ -137,25 +132,58 @@ public class BigView extends View implements GestureDetector.OnGestureListener {
 
     @Override
     public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float dx, float dy) {
-        mRect.left += dx;
-        if (mRect.left < 0) {
-            mRect.left = 0;
-        }
-        if (mRect.left > mImageWidth - getMeasuredWidth()) {
-            mRect.left = mImageWidth - getMeasuredWidth();
-        }
-        mRect.right = mRect.left + getMeasuredWidth();
 
-        mRect.top += dy;
-        if (mRect.top<0){
-            mRect.top=0;
-        }
-        if (mRect.top>mImageHeight-getMeasuredHeight()){
-            mRect.top=mImageHeight-getMeasuredHeight();
-        }
-        mRect.bottom = mRect.top + getMeasuredHeight();
+        mRect.offset((int) dx, (int) dy);
+
+        checkRect(mRect);
+//        mRect.left += dx;
+//        if (mRect.left < 0) {
+//            mRect.left = 0;
+//        }
+//        if (mRect.left > mImageWidth - getMeasuredWidth()) {
+//            mRect.left = mImageWidth - getMeasuredWidth();
+//        }
+//        mRect.right = (int) ((mRect.left + getMeasuredWidth()) / mScale);
+//
+//        mRect.top += dy;
+//        if (mRect.top < 0) {
+//            mRect.top = 0;
+//        }
+//        if (mRect.top > mImageHeight - getMeasuredHeight()) {
+//            mRect.top = mImageHeight - getMeasuredHeight();
+//        }
+//        mRect.bottom = (int) ((mRect.top + getMeasuredHeight()) / mScale);
         invalidate();
         return true;
+    }
+
+    private void checkRect(Rect mRect) {
+        //图片宽高比>1
+        if (ratio > 1) {
+            mRect.top = 0;
+            mRect.bottom = mImageHeight;
+            if (mRect.left < 0) {
+                mRect.left = 0;
+                mRect.right = (int) (getMeasuredWidth() / mScale);
+            }
+            if (mRect.right > mImageWidth) {
+                mRect.right = mImageWidth;
+                mRect.left = (int) (mImageWidth - getMeasuredWidth() / mScale);
+            }
+        } else {
+            mRect.left = 0;
+            mRect.right = mImageWidth;
+
+            if (mRect.top < 0) {
+                mRect.top = 0;
+                mRect.bottom = (int) (getMeasuredHeight() / mScale);
+            }
+
+            if (mRect.bottom > mImageHeight) {
+                mRect.bottom = mImageHeight;
+                mRect.top = (int) (mImageHeight - getMeasuredHeight() / mScale);
+            }
+        }
     }
 
     @Override
