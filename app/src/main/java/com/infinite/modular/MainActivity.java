@@ -2,6 +2,7 @@ package com.infinite.modular;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.renderscript.ScriptGroup;
 import android.util.Log;
 import android.view.View;
 
@@ -14,9 +15,12 @@ import com.infinite.arouter_api.ARouterManager;
 import com.infinite.arouter_api.core.ARouterLoadGroup;
 import com.infinite.arouter_api.core.ARouterLoadPath;
 import com.infinite.common.user.call.UserCall;
+import com.infinite.common.view.BigView;
 import com.infinite.modular.apt.ARouter$$Group$$guide;
 import com.infinite.modular.apt.ARouter$$Group$$user;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 @ARouter(path = "/app/MainActivity")
@@ -33,6 +37,13 @@ public class MainActivity extends AppCompatActivity {
         name = getIntent().getStringExtra("name");
         age = getIntent().getIntExtra("age", age);
 
+        try {
+            InputStream is=getAssets().open("world.jpg");
+            ((BigView)findViewById(R.id.bigView)).setImageStream(is);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void jump(View v) {
