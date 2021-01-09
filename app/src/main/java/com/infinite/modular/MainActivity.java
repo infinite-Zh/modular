@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         age = getIntent().getIntExtra("age", age);
 
         try {
+//            InputStream is=getAssets().open("long.jpeg");
             InputStream is=getAssets().open("world.jpg");
             ((BigView)findViewById(R.id.bigView)).setImageStream(is);
 

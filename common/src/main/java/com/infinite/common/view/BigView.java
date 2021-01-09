@@ -12,6 +12,7 @@ import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Scroller;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +43,8 @@ public class BigView extends View implements GestureDetector.OnGestureListener {
 
     private final Matrix matrix = new Matrix();
 
+    private Scroller mScroller;
+
     public BigView(Context context) {
         super(context);
     }
@@ -56,6 +59,7 @@ public class BigView extends View implements GestureDetector.OnGestureListener {
     }
 
     private void init() {
+        mScroller = new Scroller(getContext());
         mGestureDetector = new GestureDetector(getContext(), this);
         options = new BitmapFactory.Options();
     }
@@ -103,20 +107,11 @@ public class BigView extends View implements GestureDetector.OnGestureListener {
         }
     }
 
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        options.inBitmap = mBitmap;
-        mBitmap = decoder.decodeRegion(mRect, options);
-        if (mBitmap != null) {
-            matrix.setScale(mScale, mScale);
-            canvas.drawBitmap(mBitmap, matrix, null);
-        }
-    }
-
     @Override
     public boolean onDown(MotionEvent motionEvent) {
+        if (!mScroller.isFinished()){
+            mScroller.forceFinished(true);
+        }
         return true;
     }
 
@@ -133,28 +128,59 @@ public class BigView extends View implements GestureDetector.OnGestureListener {
     @Override
     public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float dx, float dy) {
 
-        mRect.offset((int) dx, (int) dy);
+        mRect.offset((int) (dx/mScale), (int) (dy/mScale));
 
         checkRect(mRect);
-//        mRect.left += dx;
-//        if (mRect.left < 0) {
-//            mRect.left = 0;
-//        }
-//        if (mRect.left > mImageWidth - getMeasuredWidth()) {
-//            mRect.left = mImageWidth - getMeasuredWidth();
-//        }
-//        mRect.right = (int) ((mRect.left + getMeasuredWidth()) / mScale);
-//
-//        mRect.top += dy;
-//        if (mRect.top < 0) {
-//            mRect.top = 0;
-//        }
-//        if (mRect.top > mImageHeight - getMeasuredHeight()) {
-//            mRect.top = mImageHeight - getMeasuredHeight();
-//        }
-//        mRect.bottom = (int) ((mRect.top + getMeasuredHeight()) / mScale);
         invalidate();
         return true;
+    }
+
+
+    @Override
+    public void onLongPress(MotionEvent motionEvent) {
+
+    }
+
+    @Override
+    public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float vx, float vy) {
+        mScroller.fling(mRect.left, mRect.top, -(int) vx, -(int) vy,
+                0, (int) (mImageWidth - getMeasuredWidth()/mScale),
+                0, (int) (mImageHeight - getMeasuredHeight()/mScale));
+        return false;
+    }
+
+    @Override
+    public void computeScroll() {
+        super.computeScroll();
+        if (mScroller.isFinished()) {
+            return;
+        }
+        if (mScroller.computeScrollOffset()) {
+            if (ratio > 1) {
+                mRect.left = mScroller.getCurrX();
+                mRect.right = (int) (mRect.left + getMeasuredWidth() / mScale);
+            }else {
+                mRect.top=mScroller.getCurrY();
+                mRect.bottom= (int) (mRect.top+getMeasuredHeight()/mScale);
+            }
+            invalidate();
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return mGestureDetector.onTouchEvent(event);
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        options.inBitmap = mBitmap;
+        mBitmap = decoder.decodeRegion(mRect, options);
+        if (mBitmap != null) {
+            matrix.setScale(mScale, mScale);
+            canvas.drawBitmap(mBitmap, matrix, null);
+        }
     }
 
     private void checkRect(Rect mRect) {
@@ -184,20 +210,5 @@ public class BigView extends View implements GestureDetector.OnGestureListener {
                 mRect.top = (int) (mImageHeight - getMeasuredHeight() / mScale);
             }
         }
-    }
-
-    @Override
-    public void onLongPress(MotionEvent motionEvent) {
-
-    }
-
-    @Override
-    public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
-        return false;
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        return mGestureDetector.onTouchEvent(event);
     }
 }

@@ -182,7 +182,8 @@ public class NeBigView extends View implements GestureDetector.OnGestureListener
     // 处理惯性问题
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        mScroller.fling(mRect.left,mRect.top,(int)-velocityX,(int)-velocityY,0,mImageWidth-(int)(mViewWidth/mScale),
+        mScroller.fling(mRect.left,mRect.top,(int)-velocityX,(int)-velocityY,
+                0,mImageWidth-(int)(mViewWidth/mScale),
                 0,mImageHeight-(int)(mViewHeight/mScale));
         return false;
     }
