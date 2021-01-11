@@ -2,7 +2,6 @@ package com.infinite.modular;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.renderscript.ScriptGroup;
 import android.util.Log;
 import android.view.View;
 
@@ -10,18 +9,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.infinite.annotation.ARouter;
-import com.infinite.annotation.RouterBean;
 import com.infinite.arouter_api.ARouterManager;
-import com.infinite.arouter_api.core.ARouterLoadGroup;
-import com.infinite.arouter_api.core.ARouterLoadPath;
 import com.infinite.common.user.call.UserCall;
 import com.infinite.common.view.BigView;
-import com.infinite.modular.apt.ARouter$$Group$$guide;
-import com.infinite.modular.apt.ARouter$$Group$$user;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 
 @ARouter(path = "/app/MainActivity")
 public class MainActivity extends AppCompatActivity {
@@ -38,8 +31,9 @@ public class MainActivity extends AppCompatActivity {
         age = getIntent().getIntExtra("age", age);
 
         try {
-//            InputStream is=getAssets().open("long.jpeg");
-            InputStream is=getAssets().open("world.jpg");
+            InputStream is=getAssets().open("long.jpeg");
+//            InputStream is=getAssets().open("world.jpg");
+//            ((NeBigView)findViewById(R.id.bigView)).setImage(is);
             ((BigView)findViewById(R.id.bigView)).setImageStream(is);
 
         } catch (IOException e) {
